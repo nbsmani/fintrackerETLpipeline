@@ -214,3 +214,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+assets/.api
+data/landing_zone/
+data/landing_zone/price*
