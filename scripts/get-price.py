@@ -21,7 +21,7 @@ OUTPUT:
     A CSV file located in ./data/landing_zone/ with the naming convention:
     priceYYYY-MM-DD-HH-MM-SS.csv
 Author: Balasubramaniam Namasivayam
-Date: 2025-06-15
+Date: 15/06/2025
 """
 
 # Import necessary libraries
