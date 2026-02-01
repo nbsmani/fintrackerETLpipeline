@@ -1,5 +1,7 @@
 import os
 import requests
+from datetime import datetime
+import json
 
 api_path = './assets/.api'
 
@@ -27,3 +29,7 @@ def make_api_request():
         print("Error:", str(e))
     
 result=make_api_request()
+
+save_json_path = f'./data/landing_zone/gold_price{datetime.now()}.json'
+with open(save_json_path, 'w') as json_file:
+    json.dump(json.loads(result), json_file, indent=4)

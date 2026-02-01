@@ -217,5 +217,10 @@ __marimo__/
 .streamlit/secrets.toml
 =======
 assets/.api
+<<<<<<< HEAD
 >>>>>>> 9e0cdfd (complete extaction app)
+data/landing_zone/
+=======
+data/*
+>>>>>>> be3518b (complete version with `https://goldapi.io/`)
 data/landing_zone/
