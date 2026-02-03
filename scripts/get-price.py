@@ -65,7 +65,7 @@ for symbol in symbols:
 
 # Validate timestamp
 # This uses the timestamp from the last successful API call in the loop
-if data and data['updated']:
+if data and data['updatedAt']:
     latest_time = data["updatedAt"].replace(":", "-")
 else:
     # Fallback to system time if API timestamp is unavailable
@@ -78,3 +78,6 @@ output_file = f'./data/landing_zone/price{latest_time}.csv'
 # Convert the current price dictionary to a DataFrame and load as CSV
 current_price = pd.DataFrame.from_dict(current_price, orient='index')
 current_price.to_csv(output_file, sep=',', index=False)
+
+# Print confirmation message for logging
+print(f"Price data saved to {output_file}")
