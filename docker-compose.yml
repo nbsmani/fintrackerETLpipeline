@@ -13,6 +13,21 @@ services:
       - ./scripts:/commodity-tracker/scripts
     networks:
       - etl-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chinook -d chinook"]  
+      interval: 10s
+      timeout:  5s
+      retries: 5    
+  
+  extractor:
+    image: etl-py:latest
+    depends_on: 
+      - postgres
+    volumes:
+      - ./data:/commodity-tracker/data
+      - ./scripts:/commodity-tracker/scripts
+    networks:
+      - etl-network  
 
 networks:
   etl-network:
