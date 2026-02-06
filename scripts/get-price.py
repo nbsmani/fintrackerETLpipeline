@@ -28,25 +28,39 @@ Date: 15/06/2025
 import os
 from datetime import datetime
 import requests
-import json
 import pandas as pd
 
 # Define API endpoint
-url = 'https://api.gold-api.com/price/'
-symbol_file_path = "./data/symbols.json"
-# Load symbols from local JSON file. If the symbols file is not available, it can be created by running `./scripts/get-symbols.py`
-if symbol_file_path:
-    with open("./data/symbols.json", 'r') as f:
-        symbols_data = json.load(f)
-    symbols_data = pd.DataFrame(symbols_data)
-    symbols = symbols_data['symbol'].tolist()
+url = 'https://api.gold-api.com'
+headers = {"Content-Type": "application/json"}
+symbol_file_path = "./data/symbols.csv"
+
+# Load symbols from local csv. If the symbols file is not available, it can be fetched from the API and saved locally for future use.
+
+if not os.path.isfile(symbol_file_path):
+    print("Symbol file is not available. Getting symbols from `https://api.gold-api.com/symbols` and saving to local csv file.")
+    
+    # Make the API request to get symbols 
+    # Set up headers for the API request
+    
+    try:   
+        response = requests.get(f"{url}/symbols", headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            data = pd.DataFrame(data)
+            data.to_csv(symbol_file_path, index=False)
+            symbols = data['symbol'].tolist()
+            print(f"Symbols fetched and saved to {symbol_file_path}")
+        else:
+            print(f"Error fetching symbols: {response.status_code}")        
+    # Handle potential errors
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 else:
-    print("Symbol file is not available. Please run `./scripts/get-symbols.py` to create the symbols file.")
+    symbols_data = pd.read_csv(symbol_file_path)
+    symbols = symbols_data['symbol'].tolist()
 
-# Set up headers for the API request
-headers = {
-    "Content-Type": "application/json"}
 
 # Initialize dictionary to hold current prices
 current_price ={}
@@ -54,7 +68,7 @@ data = None
 
 # Fetch current price for each symbol
 for symbol in symbols:
-    url_symbol = f"{url}{symbol}"
+    url_symbol = f"{url}/price/{symbol}"
     response = requests.get(url_symbol, headers=headers)
     if response.status_code == 200:
         data = response.json()

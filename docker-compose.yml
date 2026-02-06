@@ -10,24 +10,52 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./data:/commodity-tracker/data
-      - ./scripts:/commodity-tracker/scripts
+      - type: bind
+        source: ./scripts/init.sql
+        target: /docker-entrypoint-initdb.d/01-init.sql
+      - type: bind
+        source: ./scripts/bronze/ddl_bronze.sql
+        target: /docker-entrypoint-initdb.d/02-ddl-bronze.sql
+
     networks:
       - etl-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U chinook -d chinook"]  
+      test: ["CMD-SHELL", "pg_isready -U myuser -d commodity_db"]  
       interval: 10s
       timeout:  5s
       retries: 5    
   
   extractor:
-    image: etl-py:latest
+    image: cpd-extractor
     depends_on: 
       - postgres
     volumes:
       - ./data:/commodity-tracker/data
       - ./scripts:/commodity-tracker/scripts
     networks:
-      - etl-network  
+      - etl-network
+
+  loader:
+    image: cpd-loader
+    depends_on: 
+      postgres:
+        condition: service_healthy
+      extractor:
+        condition: service_completed_successfully
+    volumes:
+      - ./data:/commodity-tracker/data
+      - ./scripts:/commodity-tracker/scripts
+    command: ["/commodity-tracker/data/landing_zone/dummy_price.csv",
+              "myuser",
+              "secret",
+              "postgres",
+              "5432",
+              "commodity_db",
+              "bronze",
+              "bronze_prices"]
+    networks:
+      - etl-network
+  
 
 networks:
   etl-network:

@@ -2,11 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /commodity-tracker
 
-COPY assets/requirements.txt .
+COPY assets/requirements_extractor.txt .
 COPY scripts/ scripts/
 COPY data/ data/
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements_extractor.txt
 
 ENTRYPOINT ["python", "scripts/get-price.py"]
 

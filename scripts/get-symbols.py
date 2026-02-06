@@ -6,6 +6,10 @@ This script is intended to be run prior to executing the `get-price.py` script t
 
 Developed by: Balasubramaniam Namasivayam
 Date: 15/06/2025
+
+Updates:
+ - 04/03/2026 DEPRECATION: The script is now incorporated into the `get-price.py` script to streamline the process of fetching symbols and prices in a single execution. The symbols are now saved to a local CSV file for easier access and management. 
+ The idea is to get this table at gold layer from the available prices table.
 """
 
 # import necessary libraries
