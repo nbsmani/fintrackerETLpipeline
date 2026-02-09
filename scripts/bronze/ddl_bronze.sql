@@ -31,3 +31,4 @@ CREATE TABLE IF NOT EXISTS bronze_symbols(
 
 
 
+select * from silver.silver_prices;
