@@ -12,7 +12,7 @@
 SET search_path TO bronze;
 
 ALTER DATABASE commodity_db SET timezone TO 'UTC';
-DROP TABLE IF EXISTS bronze_prices;
+
 CREATE TABLE IF NOT EXISTS bronze_prices (
     price_id BIGSERIAL PRIMARY KEY,
     name TEXT,
@@ -20,9 +20,9 @@ CREATE TABLE IF NOT EXISTS bronze_prices (
     symbol TEXt,
     updatedAt TEXT ,
     updatedAtReadable TEXT,
-    ingested_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP);
+    ingested_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    uuid UUID);
 
-DROP TABLE IF EXISTS bronze_symbols;
 CREATE TABLE IF NOT EXISTS bronze_symbols(
     symbol_id SERIAL PRIMARY KEY,
     name TEXT,
