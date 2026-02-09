@@ -45,14 +45,15 @@ services:
     volumes:
       - ./data:/commodity-tracker/data
       - ./scripts:/commodity-tracker/scripts
-    command: ["/commodity-tracker/data/landing_zone/dummy_price.csv",
+    command: ["/commodity-tracker/data/landing_zone/",
               "myuser",
               "secret",
               "postgres",
               "5432",
               "commodity_db",
               "bronze",
-              "bronze_prices"]
+              "bronze_prices",
+              "/commodity-tracker/data/archive/"]
     networks:
       - etl-network
   

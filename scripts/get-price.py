@@ -28,6 +28,7 @@ Date: 15/06/2025
 import os
 from datetime import datetime
 import requests
+import uuid
 import pandas as pd
 
 # Define API endpoint
@@ -91,6 +92,9 @@ output_file = f'./data/landing_zone/price{latest_time}.csv'
 
 # Convert the current price dictionary to a DataFrame and load as CSV
 current_price = pd.DataFrame.from_dict(current_price, orient='index')
+
+#add a uuid for the extraction
+current_price['uuid'] = str(uuid.uuid4())
 current_price.to_csv(output_file, sep=',', index=False)
 
 # Print confirmation message for logging
