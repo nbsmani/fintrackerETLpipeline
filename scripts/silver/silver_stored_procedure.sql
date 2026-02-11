@@ -33,7 +33,6 @@ BEGIN
             uuid AS batch_id
         FROM bronze.bronze_prices
         WHERE price IS NOT NULL
-            AND price > 0.0000
             AND symbol IS NOT NULL 
     )-- Move data from bronze to silver layer
     SELECT cs.* FROM clean_staging cs
