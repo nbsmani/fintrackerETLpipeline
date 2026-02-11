@@ -22,28 +22,3 @@ CREATE TABLE IF NOT EXISTS silver_prices (
     prc_updated_at_readable VARCHAR(25),
     ingested_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     batch_id UUID);
-
-SELECT * FROM silver.silver_prices;
-
-
-
-INSERT INTO silver.silver_prices(
-    commodity_name,
-    price,
-    symbol,
-    api_updated_at,
-    prc_updated_at_readable,
-    ingested_at,
-    batch_id
-)SELECT
-    name,
-    price::DECIMAL(16, 4),
-    symbol,
-    updatedat::TIMESTAMPTZ,
-    updatedatreadable,
-    ingested_at,
-    uuid FROM bronze.bronze_prices b
-    WHERE NOT EXISTS (
-        SELECT 1 FROM silver.silver_prices s
-        WHERE s.batch_id = b.uuid
-    );
