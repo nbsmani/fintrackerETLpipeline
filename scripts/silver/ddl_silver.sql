@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS silver_prices (
 
 SELECT * FROM silver.silver_prices;
 
+
+
 INSERT INTO silver.silver_prices(
     commodity_name,
     price,

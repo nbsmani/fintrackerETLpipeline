@@ -22,13 +22,3 @@ CREATE TABLE IF NOT EXISTS bronze_prices (
     updatedAtReadable TEXT,
     ingested_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     uuid UUID);
-
-CREATE TABLE IF NOT EXISTS bronze_symbols(
-    symbol_id SERIAL PRIMARY KEY,
-    name TEXT,
-    symbol TEXT,
-    ingested_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP);
-
-
-
-select * from silver.silver_prices;
