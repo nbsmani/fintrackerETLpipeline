@@ -4,7 +4,7 @@
 import os
 import sys
 import pandas as pd
-from sqlalchemy import create_engine, URL
+from sqlalchemy import create_engine, URL, text
 import uuid
 
 #Input_params
@@ -40,11 +40,21 @@ dbms_url = URL.create(
 
 engine = create_engine(dbms_url, echo=False)
 
+
+
+
 #function to verify if there is `uuid` column in the dataframe, if not add a new column with uuid values
 def assign_uuid(df):
     if 'uuid' not in df.columns:
         df['uuid'] = str(uuid.uuid4())
     return df
+
+# Fucntion to truncate the bronze table before loading the data
+def truncate_table():
+    with engine.connect() as connection:
+        connection.execute(text(f"TRUNCATE TABLE {schema}.{table_name}"))
+        connection.commit()
+        print(f"Table {schema}.{table_name} is truncated successfully.")
 
 def process_file(file):
     input_file = os.path.join(input_dir, file)
@@ -69,5 +79,9 @@ def process_file(file):
         print(f"Error occurred during data ingestion: {e}")
     
 if __name__ == "__main__":
-    for file in files:
+    #truncate the bronze table before loading the data
+    truncate_table() 
+
+#process each file in the input directory
+    for file in files: 
         process_file(file)
