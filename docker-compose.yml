@@ -57,6 +57,41 @@ services:
     networks:
       - etl-network
   
+  postgres-airflow-metadata:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: airflow_user
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: airflow_metadata
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata-airflow:/var/lib/postgresql/data
+    networks:
+      - etl-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow_user -d airflow_metadata"]  
+      interval: 10s
+      timeout:  5s
+      retries: 5
+
+  airflow-manager:
+    image: apache/airflow:latest
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg://airflow_user:secret@postgres-airflow-metadata:5432/airflow_metadata
+      AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: False
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+    depends_on: 
+      postgres-airflow-metadata:
+        condition: service_healthy
+    command: ["standalone"]  
+    networks:
+      - etl-network
 
 networks:
   etl-network:
@@ -64,3 +99,5 @@ networks:
 
 volumes:
   pgdata:
+  pgdata-airflow:
+  
