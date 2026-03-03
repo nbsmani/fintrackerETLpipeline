@@ -76,7 +76,7 @@ services:
       retries: 5
 
   airflow-manager:
-    image: apache/airflow:latest
+    image: airflow-with-docker:latest
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg://airflow_user:secret@postgres-airflow-metadata:5432/airflow_metadata
@@ -84,6 +84,7 @@ services:
     volumes:
       - ./dags:/opt/airflow/dags
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/data
     ports:
       - "8080:8080"
     depends_on: 
