@@ -2,3 +2,10 @@ assets/.api
 data/archive/
 data/landing_zone/
 data/landing_zone/price*
+
+#dag caches
+dags/__pycache__/*
+
+# dev scripts
+dags/00-docker-check.py
+dags/test.py

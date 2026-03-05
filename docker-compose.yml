@@ -26,7 +26,7 @@ services:
       retries: 5    
   
   extractor:
-    image: cpd-extractor
+    image: cpd-extractor #This image must be locally built in the specified name before execution. Use `Dockerfile_extractor` to compile the image
     depends_on: 
       - postgres
     volumes:
@@ -36,7 +36,8 @@ services:
       - etl-network
 
   loader:
-    image: cpd-loader
+    image: cpd-loader #This image must be locally built in the specified name before execution. Use `Dockerfile_loader` to compile the image
+
     depends_on: 
       postgres:
         condition: service_healthy
@@ -46,14 +47,14 @@ services:
       - ./data:/commodity-tracker/data
       - ./scripts:/commodity-tracker/scripts
     command: ["/commodity-tracker/data/landing_zone/",
-              "myuser",
-              "secret",
-              "postgres",
-              "5432",
-              "commodity_db",
-              "bronze",
-              "bronze_prices",
-              "/commodity-tracker/data/archive/"]
+              "myuser", #user name of the db 
+              "secret", #password of the db
+              "postgres", #db service name, ipaddress resolved by DNS
+              "5432", #port where the db service is exposed
+              "commodity_db", #database name
+              "bronze", #schema name
+              "bronze_prices", #table name
+              "/commodity-tracker/data/archive/"] #address where to archive the processed files
     networks:
       - etl-network
   
@@ -76,15 +77,26 @@ services:
       retries: 5
 
   airflow-manager:
-    image: airflow-with-docker:latest
+    image: airflow-with-docker:latest ##This image must be locally built in the specified name before execution. Use `Dockerfile_airflow` to compile the image
+    user: root
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg://airflow_user:secret@postgres-airflow-metadata:5432/airflow_metadata
       AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: False
+      HOST_PWD: $PWD
+
+      # Pass the mounted path as env var for Airflow tasks to use
+      SHARED_DATA_PATH: /airflow-data
     volumes:
       - ./dags:/opt/airflow/dags
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./data:/data
+      - ./data:/opt/airflow/data
+      - ./scripts:/opt/airflow/scripts
+
+      # Mount data volume - THIS MUST BE AN ABSOLUTE PATH ON YOUR HOST
+      # Replace /absolute/path/to with the actual location of your docker-compose.yml parent directory
+      # For example: /home/user/my-project:/airflow-data or /root/project:/airflow-data
+      - /var/lib/docker/volumes/commodity-data/_data:/airflow-data
     ports:
       - "8080:8080"
     depends_on: 
@@ -101,4 +113,4 @@ networks:
 volumes:
   pgdata:
   pgdata-airflow:
-  
+  commodity-data:
