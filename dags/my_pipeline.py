@@ -46,6 +46,7 @@ with DAG(
 	load = DockerOperator(
 		task_id = 'load_commodity_prices_to_bronze',
 		image = 'cpd-loader',
+		user='1000:1000',
 		mounts = [
 		#dataDir
 			Mount(source=f'{host_path}/data',

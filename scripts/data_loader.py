@@ -71,13 +71,33 @@ def process_file(file):
             if_exists='append', 
             index=False)
         print(f"Data ingested successfully into {schema}.{table_name} table.")
+        
         #move the processed file to archive directory
-        os.rename(input_file, os.path.join(archive_dir, file))
-        print(f"File {file} is processed and moved to archive directory.")
+        #New functionality: Classify the files based on date/month year and move to corresponding subdirectories in the archive directory. This will help to organize the files in the archive directory and make it easier to retrieve the files based on date/month/year if needed in the future.
+
+        updated_date = df['updatedat'].iloc[0] #assuming all the records in the file have the same updatedAt value, we can take the value from the first record
+        
+        # Obtain the year, month and day from the updatedAt column to create subdirectories in the archive directory
+        date_obj = pd.to_datetime(updated_date)
+        year = date_obj.year
+        month = date_obj.month
+        day = date_obj.day
+        
+        #create subdirectory in the archive directory based on year/month/day
+        sub_dir = os.path.join(archive_dir, f"{year}/{month:02d}/{day:02d}")
+        
+        #move the file to the subdirectory in the archive directory. Create the subdirectory if it does not exist
+        os.makedirs(sub_dir, exist_ok=True)
+        os.rename(input_file, os.path.join(sub_dir, file))
+
+        #Emit a log message indicating that the file has been processed and moved to the archive directory
+        print(f"File {file} is processed and moved to {sub_dir} directory.")
     
     except Exception as e:
         print(f"Error occurred during data ingestion: {e}")
-    
+
+
+
 if __name__ == "__main__":
     #truncate the bronze table before loading the data
     truncate_table() 

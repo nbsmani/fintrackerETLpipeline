@@ -5,4 +5,4 @@ RUN pip install --no-cache-dir -r requirements_loader.txt
 COPY scripts/ scripts/
 COPY data/ data/
 ENTRYPOINT ["python", "scripts/data_loader.py"]
-CMD ["data/landing_zone/dummy_price.csv","myuser","secret","localhost","5432","commodity_db","bronze","bronze_prices"]
+CMD ["data/landing_zone/","myuser","secret","localhost","5432","commodity_db","bronze","bronze_prices"]
