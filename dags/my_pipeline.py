@@ -31,7 +31,8 @@ with DAG(
 
 	extract = DockerOperator(
 		task_id = 'extract_commodity_prices',
-		image = 'cpd-extractor',
+		image = 'cpd-python',
+		entrypoint = ["python", "scripts/get-price.py"],
 		mounts = [
 		#data_dir	
 			Mount(source=f'{host_path}/data',
@@ -45,7 +46,8 @@ with DAG(
 
 	load = DockerOperator(
 		task_id = 'load_commodity_prices_to_bronze',
-		image = 'cpd-loader',
+		image = 'cpd-python',
+		entrypoint = ["python", "scripts/data_loader.py"],
 		mounts = [
 		#dataDir
 			Mount(source=f'{host_path}/data',
