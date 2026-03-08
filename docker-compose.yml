@@ -47,7 +47,7 @@ services:
 
   # Airflow Webserver and Scheduler
   airflow-manager:
-    image: airflow-with-docker:latest ##This image must be locally built in the specified name before execution. Use `Dockerfile_airflow` to compile the image
+    image: airflow-with-dependencies:latest ##This image must be locally built in the specified name before execution. Use `Dockerfile_airflow` to compile the image
     user: root
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
