@@ -1,4 +1,5 @@
 services:
+# PostgreSQL Database for Commodity Prices
   postgres:
     image: postgres:14
     environment:
@@ -23,41 +24,9 @@ services:
       test: ["CMD-SHELL", "pg_isready -U myuser -d commodity_db"]  
       interval: 10s
       timeout:  5s
-      retries: 5    
-  
-  extractor:
-    image: cpd-extractor #This image must be locally built in the specified name before execution. Use `Dockerfile_extractor` to compile the image
-    depends_on: 
-      - postgres
-    volumes:
-      - ./data:/commodity-tracker/data
-      - ./scripts:/commodity-tracker/scripts
-    networks:
-      - etl-network
-
-  loader:
-    image: cpd-loader #This image must be locally built in the specified name before execution. Use `Dockerfile_loader` to compile the image
-
-    depends_on: 
-      postgres:
-        condition: service_healthy
-      extractor:
-        condition: service_completed_successfully
-    volumes:
-      - ./data:/commodity-tracker/data
-      - ./scripts:/commodity-tracker/scripts
-    command: ["/commodity-tracker/data/landing_zone/",
-              "myuser", #user name of the db 
-              "secret", #password of the db
-              "postgres", #db service name, ipaddress resolved by DNS
-              "5432", #port where the db service is exposed
-              "commodity_db", #database name
-              "bronze", #schema name
-              "bronze_prices", #table name
-              "/commodity-tracker/data/archive/"] #address where to archive the processed files
-    networks:
-      - etl-network
-  
+      retries: 5  
+ 
+  # Airflow Metadata Database
   postgres-airflow-metadata:
     image: postgres:14
     environment:
@@ -76,8 +45,9 @@ services:
       timeout:  5s
       retries: 5
 
+  # Airflow Webserver and Scheduler
   airflow-manager:
-    image: airflow-with-docker:latest ##This image must be locally built in the specified name before execution. Use `Dockerfile_airflow` to compile the image
+    image: airflow-with-dependencies:latest ##This image must be locally built in the specified name before execution. Use `Dockerfile_airflow` to compile the image
     user: root
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor

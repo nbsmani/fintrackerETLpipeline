@@ -1,5 +1,6 @@
 from airflow import DAG
 from airflow.providers.docker.operators.docker import DockerOperator, Mount
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from datetime import datetime
 import os
 
@@ -17,7 +18,7 @@ default_args = {
 with DAG(
 	"commodity-tracker-pipeline",
 	default_args = default_args,
-	schedule = '*/15 * * * *',
+	schedule = '*/15 * * * *', #every 5 minutes during weekdays. Crypto markets are 24/7, so we can run the pipeline every 15 minutes all day
 	catchup = False,
 	) as dag:
 
@@ -31,7 +32,8 @@ with DAG(
 
 	extract = DockerOperator(
 		task_id = 'extract_commodity_prices',
-		image = 'cpd-extractor',
+		image = 'cpd-python',
+		entrypoint = ["python", "scripts/get-price.py"],
 		mounts = [
 		#data_dir	
 			Mount(source=f'{host_path}/data',
@@ -45,7 +47,8 @@ with DAG(
 
 	load = DockerOperator(
 		task_id = 'load_commodity_prices_to_bronze',
-		image = 'cpd-loader',
+		image = 'cpd-python',
+		entrypoint = ["python", "scripts/data_loader.py"],
 		mounts = [
 		#dataDir
 			Mount(source=f'{host_path}/data',
@@ -67,4 +70,14 @@ with DAG(
               "bronze_prices", #table name
               "/commodity-tracker/data/archive/"])
 
-check_db_status >> extract >> load
+	silver_ddl = SQLExecuteQueryOperator(
+		task_id = 'ddl_for_silver',
+		conn_id = 'postgres_default',
+		sql = "sql/ddl_silver.sql")
+
+	promote_to_silver = SQLExecuteQueryOperator(
+		task_id = 'promote_bronze_to_silver',
+		conn_id = 'postgres_default',
+		sql = "sql/promote_to_silver.sql")
+
+check_db_status >> extract >> load >> silver_ddl >> promote_to_silver

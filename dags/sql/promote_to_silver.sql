@@ -52,6 +52,3 @@ BEGIN
 -- This executes the logic you just built
 CALL silver.promote_bronze_to_silver();
 
--- Check the results
-SELECT * FROM bronze.bronze_prices;
-SELECT * FROM silver.silver_prices;
