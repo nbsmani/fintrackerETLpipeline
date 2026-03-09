@@ -75,9 +75,12 @@ with DAG(
 		conn_id = 'postgres_default',
 		sql = "sql/ddl_silver.sql")
 
+
 	promote_to_silver = SQLExecuteQueryOperator(
 		task_id = 'promote_bronze_to_silver',
 		conn_id = 'postgres_default',
 		sql = "sql/promote_to_silver.sql")
 
+
 check_db_status >> extract >> load >> silver_ddl >> promote_to_silver
+
