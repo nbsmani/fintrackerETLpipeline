@@ -71,16 +71,25 @@ with DAG(
               "/commodity-tracker/data/archive/"])
 
 	silver_ddl = SQLExecuteQueryOperator(
-		task_id = 'ddl_for_silver',
-		conn_id = 'postgres_default',
+		task_id = "ddl_for_silver",
+		conn_id = "postgres_default",
 		sql = "sql/ddl_silver.sql")
 
 
 	promote_to_silver = SQLExecuteQueryOperator(
-		task_id = 'promote_bronze_to_silver',
-		conn_id = 'postgres_default',
+		task_id = "promote_bronze_to_silver",
+		conn_id = "postgres_default",
 		sql = "sql/promote_to_silver.sql")
 
+	gold_ddl = SQLExecuteQueryOperator(
+		task_id = "ddl_for_gold",
+		conn_id = "postgres_default",
+		sql = "sql/ddl_gold.sql")
 
-check_db_status >> extract >> load >> silver_ddl >> promote_to_silver
+	promote_to_gold = SQLExecuteQueryOperator(
+		task_id = "promote_silver_to_gold",
+		conn_id = "postgres_default",
+		sql = "sql/promote_to_gold.sql")
+
+check_db_status >> extract >> load >> silver_ddl >> promote_to_silver >> gold_ddl >> promote_to_gold
 
