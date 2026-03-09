@@ -18,7 +18,7 @@ default_args = {
 with DAG(
 	"commodity-tracker-pipeline",
 	default_args = default_args,
-	schedule = '*/15 * * * *', #every 5 minutes during weekdays. Crypto markets are 24/7, so we can run the pipeline every 15 minutes all day
+	schedule = '*/15 * * * *',  #Crypto markets are 24/7, so we can run the pipeline every 15 minutes all day
 	catchup = False,
 	) as dag:
 
