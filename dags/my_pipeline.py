@@ -1,15 +1,17 @@
+import os
 from airflow import DAG
 from airflow.providers.docker.operators.docker import DockerOperator, Mount
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from datetime import datetime
-import os
 
+#get the project_root_directory from env vars
 host_path = os.environ.get('HOST_PWD')
 
 #Define the defaults
 
 default_args = {
 	'start_date': datetime(2026,3,1),
+	'retries' : 3,
 	'auto_remove': 'success'
 }
 
@@ -20,6 +22,8 @@ with DAG(
 	default_args = default_args,
 	schedule = '*/15 * * * *',  #Crypto markets are 24/7, so we can run the pipeline every 15 minutes all day
 	catchup = False,
+	template_searchpath = ['/opt/airflow/scripts'],
+	max_active_runs = 1,
 	) as dag:
 
 	check_db_status = DockerOperator(
@@ -33,7 +37,7 @@ with DAG(
 	extract = DockerOperator(
 		task_id = 'extract_commodity_prices',
 		image = 'cpd-python',
-		entrypoint = ["python", "scripts/get-price.py"],
+		entrypoint = ["python", "scripts/extract/get-price.py"],
 		mounts = [
 		#data_dir	
 			Mount(source=f'{host_path}/data',
@@ -48,7 +52,7 @@ with DAG(
 	load = DockerOperator(
 		task_id = 'load_commodity_prices_to_bronze',
 		image = 'cpd-python',
-		entrypoint = ["python", "scripts/data_loader.py"],
+		entrypoint = ["python", "scripts/load/load-data.py"],
 		mounts = [
 		#dataDir
 			Mount(source=f'{host_path}/data',
@@ -73,23 +77,23 @@ with DAG(
 	silver_ddl = SQLExecuteQueryOperator(
 		task_id = "ddl_for_silver",
 		conn_id = "postgres_default",
-		sql = "sql/ddl_silver.sql")
+		sql = "sql/silver/ddl_silver.sql")
 
 
 	promote_to_silver = SQLExecuteQueryOperator(
 		task_id = "promote_bronze_to_silver",
 		conn_id = "postgres_default",
-		sql = "sql/promote_to_silver.sql")
+		sql = "sql/silver/promote_to_silver.sql")
 
 	gold_ddl = SQLExecuteQueryOperator(
 		task_id = "ddl_for_gold",
 		conn_id = "postgres_default",
-		sql = "sql/ddl_gold.sql")
+		sql = "sql/gold/ddl_gold.sql")
 
 	promote_to_gold = SQLExecuteQueryOperator(
 		task_id = "promote_silver_to_gold",
 		conn_id = "postgres_default",
-		sql = "sql/promote_to_gold.sql")
+		sql = "sql/gold/promote_to_gold.sql")
 
 check_db_status >> extract >> load >> silver_ddl >> promote_to_silver >> gold_ddl >> promote_to_gold
 

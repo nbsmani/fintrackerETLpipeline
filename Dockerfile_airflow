@@ -1,2 +1,0 @@
-FROM apache/airflow:slim-3.0.0-python3.11
-RUN pip install apache-airflow-providers-docker
