@@ -14,7 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 
 # Make scripts executable
-RUN chmod +x scripts/*.py
+RUN chmod +x scripts/extract/*.py
+RUN chmod +x scripts/load/*.py
 
 # Set the entry point to run the get-price.py script
 ENTRYPOINT ["python"]
