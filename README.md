@@ -163,7 +163,8 @@ The pipeline is orchestrated with Apache Airflow and runs on a 15-minute schedul
 
 4. After the first successful run, the DAG will **automatically execute every 15 minutes** (as configured in `schedule_interval`).
 
-> [!CAUTION] 🚨  While this endpoint doesn't have rate limits, spamming the endpoint will result in your IP being blocked. Please cache the price for 1 minute to prevent your IP address from being blocked!
+> [!CAUTION] 
+> 🚨  While this endpoint doesn't have rate limits, spamming the endpoint will result in your IP being blocked. Please cache the price for 1 minute to prevent your IP address from being blocked!
 
 
 Each run:
