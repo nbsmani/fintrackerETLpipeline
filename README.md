@@ -10,7 +10,7 @@
 
 A modern, containerized **ETL pipeline** that collects real-time commodity and cryptocurrency prices, applies the **Medallion Architecture** (Bronze → Silver → Gold), and prepares clean, analytics-ready data.
 
-Data is pulled from the [Gold API](https://www.goldapi.io/) and stored in PostgreSQL with full auditability and idempotency. The data is pulled once in 15 minutes for demonstration. Time interval of the extraction can be customized in the airflow DAG.
+Data is pulled from the [Gold API](https://gold-api.com/). This API is a Free endpoint with no rate limits. The extracted data is stored in PostgreSQL with full auditability and idempotency. The data is pulled once in 15 minutes for demonstration. Time interval of the extraction can be customized in the airflow DAG.
 
 ## ✨ Features
 
@@ -106,6 +106,16 @@ For this pipeline to work properly, please make sure the following softwares are
 - Docker and Docker compose
 - git
 
+### Cloning the repo
+
+Clone the repo using the following commands
+
+```bash
+git clone git@github.com:nbsmani/fintrackerETLpipeline.git
+```
+
+Once cloned, follow these steps:
+
 ### 1. Compile the required custom images
 
 This pipeline needs the images`cpd-python` and `airflow-with-dependencies` should be built before launching the pipeline. The `Dockerfile`s for these images are available in the root directory of the repository.
@@ -153,6 +163,9 @@ The pipeline is orchestrated with Apache Airflow and runs on a 15-minute schedul
 
 4. After the first successful run, the DAG will **automatically execute every 15 minutes** (as configured in `schedule_interval`).
 
+🚨 Warning: While this endpoint doesn't have rate limits, spamming the endpoint will result in your IP being blocked. Please cache the price for 1 minute to prevent your IP address from being blocked!
+
+
 Each run:
 - Pulls fresh commodity & crypto prices from the Gold API
 - Processes data through the Medallion layers (Bronze → Silver → Gold)
@@ -184,6 +197,6 @@ Here are the local connection details
 - Username: myuser
 - Password: secret
 
-#### 🛡️🔐 Security Note
+#### 🛡️ Security Note
 
 These credentials (myuser / secret) are for local demo use only. In production, use strong passwords, secret management (Vault/AWS SSM), and never expose the database port publicly.
