@@ -55,8 +55,6 @@ services:
       AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS: False
       AIRFLOW_CONN_POSTGRES_DEFAULT: postgresql://myuser:secret@postgres:5432/commodity_db
       HOST_PWD: $PWD
-
-      # Pass the mounted path as env var for Airflow tasks to use
       SHARED_DATA_PATH: /airflow-data
     volumes:
       - ./dags:/opt/airflow/dags
