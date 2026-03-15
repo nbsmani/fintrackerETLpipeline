@@ -45,7 +45,7 @@ graph TD
 
 ```
 
- ### Pipeline Flow
+ ### 🛞 Pipeline Flow
 
 ```
 EXTRACT PHASE           LOAD PHASE            TRANSFORM PHASE
@@ -88,7 +88,7 @@ EXTRACT PHASE           LOAD PHASE            TRANSFORM PHASE
 
 ```
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 - Python 3.11
  - Pandas 2.2.2, 
@@ -116,7 +116,7 @@ docker compose -t cpd-python . #this will use the `Dockerfile` to build the imag
 docker compose -t airflow-with-dependencies -f Dockerfile-airflow .
 ```
 
-### Launch the pipeline
+### ⚡ Launch the pipeline
 
 Once the images are built,  the pipeline can be run using 
 
@@ -138,7 +138,7 @@ cat /opt/airflow/simple_auth_manager_passwords.json.generated
 ```
 Password is reset for every launch. In a future release, this will be upgraded to a production grade authentication system.
 
-### Starting & Running the Pipeline
+### ▶️ Starting & Running the Pipeline
 
 The pipeline is orchestrated with Apache Airflow and runs on a 15-minute schedule.
 
@@ -161,11 +161,11 @@ Each run:
 
 No further manual steps are required.
 
-### Accessing the Commodity Database
+### 🗝️ Accessing the Commodity Database
 
 All processed price data (Bronze, Silver, Gold layers) is stored in a dedicated PostgreSQL database named **`commodity_db`**.
 
-#### Connection (from inside Docker containers / Airflow tasks)
+#### 🔗 Connection (from inside Docker containers / Airflow tasks)
 
 Airflow automatically creates a connection using this environment variable (already set in the `docker-compose.yml`):
 
@@ -178,12 +178,12 @@ This connection can be used inside container or be used in airflow DAG tasks.
 
 Here are the local connection details
 
-- Host: localhost
-- Port: 5433
+- Host: postgres 
+- Port: 5432
 - Database: commodity_db
 - Username: myuser
 - Password: secret
 
-#### Security Note
+#### 🛡️🔐 Security Note
 
 These credentials (myuser / secret) are for local demo use only. In production, use strong passwords, secret management (Vault/AWS SSM), and never expose the database port publicly.
