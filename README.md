@@ -32,18 +32,8 @@ The pipeline follows the **Medallion Architecture** pattern:
 2. **Silver** – Cleansed, validated, deduplicated core layer
 3. **Gold**   – Business-friendly, denormalized tables for reporting & BI
 
-```mermaid
-graph TD
-    A[Gold API<br>every ~15 min] -->|JSON price data| B[Extract<br>+ Generate UUID]
-    B --> C[Save raw to CSV<br>landing_zone]
-    C --> D[Bronze Table<br>raw + batch_id]
-    D --> E[Archive CSV<br>by date]
-    D --> F[Silver Transform<br>clean, cast types, deduplicate]
-    F --> G[Silver Table<br>deduplicated source-of-truth]
-    G --> H[Gold Layer<br>update facts & dimensions]
-    H --> I[BI / Charting Tools<br>e.g. Metabase, Superset, Tableau]
 
-```
+![Schema of the pipeline](./assets/FinTracker%20Pipeline.png)
 
  ### 🛞 Pipeline Flow
 
