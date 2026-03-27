@@ -124,10 +124,11 @@ The pipeline is orchestrated with Apache Airflow and runs on a 15-minute schedul
 2. Locate the main DAG  named `commodity-tracker-pipeline`.
 
 3. **Manually trigger it once**:
-   - Click the play/trigger icon next to the DAG.
+   - There is a enable button (toggle switch button) and activate it so that the pipeline would run and then each 15 minutes from the nearest interval. 
+   - You can also click the play/trigger icon next to the DAG anytime to trigger a run manually. 
    - This performs the initial run and verifies everything works.
 
-4. After the first successful run, the DAG will **automatically execute every 15 minutes** (as configured in `schedule_interval`).
+5. After the first successful run, the DAG will **automatically execute every 15 minutes** (as configured in `schedule_interval`).
 
 > [!CAUTION] 
 > 🚨  While this endpoint doesn't have rate limits, spamming the endpoint will result in your IP being blocked. Please cache the price for 1 minute to prevent your IP address from being blocked!
